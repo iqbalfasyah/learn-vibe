@@ -2,7 +2,7 @@ import { Elysia } from 'elysia';
 import { usersRoute } from './routes/users-route';
 
 const app = new Elysia()
-  .use(usersRoute)
+  .group('/api/users', (app) => app.use(usersRoute))
   .get('/', () => 'Hello Elysia')
   .get('/health', () => ({ status: 'ok' }))
   .listen(3000);

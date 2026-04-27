@@ -21,4 +21,17 @@ export const usersRoute = new Elysia()
       email: t.String(),
       password: t.String(),
     })
+  })
+  .post("/login", async ({ body, set }) => {
+    try {
+      return await usersService.loginUser(body);
+    } catch (error: any) {
+      set.status = 401;
+      return { error: error.message || "Email or password wrong" };
+    }
+  }, {
+    body: t.Object({
+      email: t.String(),
+      password: t.String(),
+    })
   });
