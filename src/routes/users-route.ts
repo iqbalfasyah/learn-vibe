@@ -50,4 +50,20 @@ export const usersRoute = new Elysia()
       set.status = 401;
       return { error: "Unauthorized" };
     }
+  })
+  .post("/logout", async ({ headers, set }) => {
+    const auth = headers.authorization;
+    if (!auth || !auth.startsWith("Bearer ")) {
+      set.status = 401;
+      return { error: "Unauthorized" };
+    }
+
+    const token = auth.slice(7);
+
+    try {
+      return await usersService.logoutUser(token);
+    } catch (error: any) {
+      set.status = 401;
+      return { error: "Unauthorized" };
+    }
   });
