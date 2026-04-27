@@ -35,17 +35,33 @@ export const usersRoute = new Elysia()
       password: t.String(),
     })
   })
-  .post("/current", async ({ headers, set }) => {
+  .derive(({ headers }) => {
     const auth = headers.authorization;
-    if (!auth || !auth.startsWith("Bearer ")) {
+    return {
+      token: auth?.startsWith("Bearer ") ? auth.slice(7) : null
+    };
+  })
+  .post("/current", async ({ token, set }) => {
+    if (!token) {
       set.status = 401;
       return { error: "Unauthorized" };
     }
 
-    const token = auth.slice(7);
-
     try {
       return await usersService.getCurrentUser(token);
+    } catch (error: any) {
+      set.status = 401;
+      return { error: "Unauthorized" };
+    }
+  })
+  .post("/logout", async ({ token, set }) => {
+    if (!token) {
+      set.status = 401;
+      return { error: "Unauthorized" };
+    }
+
+    try {
+      return await usersService.logoutUser(token);
     } catch (error: any) {
       set.status = 401;
       return { error: "Unauthorized" };
