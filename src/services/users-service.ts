@@ -80,15 +80,11 @@ export const usersService = {
   },
 
   async logoutUser(token: string) {
-    const session = await db.query.sessions.findFirst({
-      where: eq(sessions.token, token),
-    });
+    const [result]: any = await db.delete(sessions).where(eq(sessions.token, token));
 
-    if (!session) {
+    if (result.affectedRows === 0) {
       throw new Error("Unauthorized");
     }
-
-    await db.delete(sessions).where(eq(sessions.token, token));
 
     return { data: "Ok" };
   },
